@@ -146,6 +146,22 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchQuotesFromServer();
   setInterval(fetchQuotesFromServer, 30000); 
 });
+async function sendQuoteToServer(quote) {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(quote)
+    });
+
+    const result = await response.json();
+    console.log("Quote sent to server:", result);
+  } catch (error) {
+    console.error("Failed to send quote:", error);
+  }
+}
 async function syncQuotes() {
   try {
     const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
@@ -182,4 +198,3 @@ async function syncQuotes() {
     console.error("Sync failed:", error);
   }
 }
-
