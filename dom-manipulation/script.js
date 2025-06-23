@@ -146,19 +146,40 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchQuotesFromServer();
   setInterval(fetchQuotesFromServer, 30000); 
 });
-async function sendQuoteToServer(quote) {
+async function syncQuotes() {
   try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(quote)
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
+    const serverQuotes = await response.json();
+
+    let updates = [];
+    let conflicts = [];
+
+    serverQuotes.forEach(serverQuote => {
+      const mapped = {
+        id: serverQuote.id,
+        text: serverQuote.title,
+        category: "Imported"
+      };
+
+      const local = quotes.find(q => q.id === mapped.id);
+
+      if (!local) {
+        quotes.push(mapped);
+        updates.push(mapped);
+      } else if (local.text !== mapped.text) {
+        const index = quotes.findIndex(q => q.id === mapped.id);
+        quotes[index] = mapped;
+        conflicts.push({ old: local, new: mapped });
+      }
     });
 
-    const result = await response.json();
-    console.log("Quote sent to server:", result);
+    if (updates.length > 0 || conflicts.length > 0) {
+      saveQuotes();
+      populateCategories();
+      notifyUser(updates, conflicts);
+    }
   } catch (error) {
-    console.error("Failed to send quote:", error);
+    console.error("Sync failed:", error);
   }
 }
+
