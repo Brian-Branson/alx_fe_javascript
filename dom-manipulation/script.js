@@ -42,21 +42,29 @@ function populateCategories(){
     dropdown.appendChild(option);
   });
 }
-function createAddQuoteForm(){
-  const text = document.getElementById("quoteText").value.trim();
+function createAddQuoteForm () {
+  const text = document.getElementById("newQuoteText").value.trim();
   const category = document.getElementById("newQuoteCategory").value.trim();
+
   if (!text || !category) {
-    alert("Please enter both fields.");
+    alert("Both quote and category are required.");
     return;
   }
-  const newQuote = {id: ++lastQuoutedid, text, category};
-  quotes
+
+  const newQuote = { id: ++lastQuoteId, text, category };
+  quotes.push(newQuote);
   saveQuotes();
   populateCategories();
-  alert("Quote added successfully!");
-  document.getElementById("quoteText").value = "";
+
+  // Send the new quote to server
+  sendQuoteToServer(newQuote);
+
+  alert("Quote added!");
+
+  document.getElementById("newQuoteText").value = "";
   document.getElementById("newQuoteCategory").value = "";
 }
+
 function exportToJson(){
   const data =JSON.stringify(quotes, null, 2);
   const blob = new Blob([data], {type: "application/json"}); 
@@ -138,3 +146,19 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchQuotesFromServer();
   setInterval(fetchQuotesFromServer, 30000); 
 });
+async function sendQuoteToServer(quote) {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(quote)
+    });
+
+    const result = await response.json();
+    console.log("Quote sent to server:", result);
+  } catch (error) {
+    console.error("Failed to send quote:", error);
+  }
+}
