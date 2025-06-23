@@ -89,7 +89,7 @@ function importFromJsonFile(event) {
   reader.readAsText(file);
 }
 
-async function fetchServerQuotes() {
+async function fetchQuotesFromServer() {
   try {
     const res = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
     const data = await res.json();
@@ -135,6 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const q = JSON.parse(last);
     document.getElementById("quoteDisplay").innerText = `"${q.text}" - (${q.category})`;
   }
-  fetchServerQuotes();
-  setInterval(fetchServerQuotes, 30000); 
+  fetchQuotesFromServer();
+  setInterval(fetchQuotesFromServer, 30000); 
 });
