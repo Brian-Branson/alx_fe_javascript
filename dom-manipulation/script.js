@@ -193,6 +193,7 @@ async function syncQuotes() {
       saveQuotes();
       populateCategories();
       notifyUser(updates, conflicts);
+      console.log("Quotes synced with server!", { updates, conflicts });
     }
   } catch (error) {
     console.error("Sync failed:", error);
