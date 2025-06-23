@@ -42,7 +42,7 @@ function populateCategories(){
     dropdown.appendChild(option);
   });
 }
-function addQuote(){
+function createAddQuoteForm(){
   const text = document.getElementById("quoteText").value.trim();
   const category = document.getElementById("newQuoteCategory").value.trim();
   if (!text || !category) {
